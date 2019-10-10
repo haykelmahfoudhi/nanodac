@@ -28,6 +28,8 @@ sauve:
 
 install:
 	cp nanodac /home/mecadmin/bin
+	cp nanodac.sh /home/mecadmin/bin
+	cp nanodac.ctl /home/mecadmin/bin
 # executable
 $(EXEC2): $(OBJS2)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(EXEC2) $(OBJS2) $(LIBS)

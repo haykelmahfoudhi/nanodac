@@ -140,25 +140,32 @@ char sztime[20];
 void print_nanodacs()
 {
  
+ // Cabine atelier 155 
  lit_mots_nanodac ("10.101.0.11");
  print_TH ( "M155002",  VOIE1, VOIE3);
  print_TH ( "M155009",  VOIE2, RIEN);
 
+ // Etuve PS1
  lit_mots_nanodac ("10.101.0.12");
  print_TH ( "M154011",  VOIE1, RIEN);
  
+ // Desolvatation 254 
  lit_mots_nanodac ("10.101.0.13");
  print_TH ( "M254010",  VOIE1, RIEN);
- 
+
+ //  Etuve A&B 254
  lit_mots_nanodac ("10.101.0.14");
  print_TH ( "M254038",  VOIE4, RIEN);
- 
+
+ // ETUVE C&D 254
  lit_mots_nanodac ("10.101.0.15");
  print_TH ( "M254037",  VOIE4, RIEN);
 
+ // Etuve G 254
  lit_mots_nanodac ("10.101.0.16");
  print_TH ( "M254039",  VOIE4, RIEN);
 
+ // Cabine peinture Speedshop 707
  lit_mots_nanodac ("10.101.0.17");
  print_TH ( "M707003",  VOIE1, VOIE2);
  print_TH ( "M707004",  VOIE3, RIEN);

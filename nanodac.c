@@ -113,7 +113,7 @@ genere la chaine qui sera importe dans la table meca_datalog
 2019-10-09 18:01:00;;M707003;19.60;78.80;
 date;;machine;temperature;hygrometrie;
 ------------------------------------------------------------------*/
-void print_TH(char * pMachine,int iVA,int iVB) 
+void print_TH(char * pMachine,int iT,int iHg) 
 {
 float f1; 
 float f2; 
@@ -124,14 +124,21 @@ char sztime[20];
  t = time (NULL); 
  strftime (sztime,20,"%Y-%m-%d %H:%M:00",localtime(&t));
 
- if (iVA == RIEN) return;
- f1 = amots[iVA].fval / 10.0; 
-
- if (iVB != RIEN) { 
-     f2 = amots[iVB].fval / 10.0;
+ if (iT == RIEN && iHg == RIEN) {
+      return;
+ }
+ if (iT != RIEN) {
+     f1 = amots[iT].fval / 10.0; 
+ }
+ if (iHg != RIEN) {
+     f2 = amots[iHg].fval / 10.0; 
+ }
+ if (iT != RIEN && iHg != RIEN) {
      printf ("%s;;%s;%5.2f;%5.2f;\n",sztime,pMachine,f1,f2); 
- } else {
+ } else if (iHg == RIEN) {
      printf ("%s;;%s;%5.2f;;\n",sztime,pMachine,f1); 
+ } else {
+     printf ("%s;;%s;;%5.2f;\n",sztime,pMachine,f2); 
  }
 }
 /*------------------------------------------------------------------

@@ -175,7 +175,7 @@ void print_nanodacs()
  // Cabine peinture Speedshop 707
  lit_mots_nanodac ("10.101.0.17");
  print_TH ( "M707003",  VOIE1, VOIE2);
- print_TH ( "M707004",  VOIE3, RIEN);
+ print_TH ( "M707010",  VOIE3, RIEN);
 
 }
 /*------------------------------------------------------------------

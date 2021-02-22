@@ -17,15 +17,18 @@
 
 #define RIEN -100 
 #define IBASE 0x100
+#define IBASERESOLUTION 0x1800
 #define VOIE1 0
 #define VOIE2 4
 #define VOIE3 8 
 #define VOIE4 12
 
+uint16_t tab_reg[MAX_MOTS_LUS];
 typedef struct mots {
     float fval;
 } t_mots ;
 t_mots amots[256];
+int aiResolution [100];
 
 
 /*------------------------------------------------------------------
@@ -35,12 +38,9 @@ t_mots amots[256];
 -----------------------------------------------------------------*/
 int lit_mots_automate ( char * szIp, short int start , short int count)
 {
-  uint16_t tab_reg[MAX_MOTS_LUS];
   int rc;
   int i;
   modbus_t *ctx;
-  time_t t;
-  char szt[20];
   float fval;
   struct timeval response_timeout;
 
@@ -81,11 +81,6 @@ int lit_mots_automate ( char * szIp, short int start , short int count)
         return -4;
    } 
 	
-   t = time (NULL); 
-   strftime (szt,20,"%Y-%m-%d %H:%M:00",localtime(&t));
-   for (i=0;i < rc;i++) {
-           amots[i].fval = tab_reg[i] ;
-   }   
 
   modbus_close(ctx);
   modbus_free(ctx);
@@ -95,6 +90,23 @@ int lit_mots_automate ( char * szIp, short int start , short int count)
 
 
 
+/*------------------------------------------------------------------
+------------------------------------------------------------------*/
+int lit_resolution_voie (char * pIp ,int iVoie)
+{
+int i=0;
+int rc=0;
+int start = IBASERESOLUTION + (iVoie/4) * 0x80;
+
+rc=lit_mots_automate (pIp,IBASERESOLUTION,10);
+if (rc>0) {
+   i = tab_reg[1] ;
+   /* fprintf(stderr,"%s %d %d \n",pIp,iVoie, i); */
+   return i;
+}
+ return -1;
+}
+
 
 
 /*------------------------------------------------------------------
@@ -102,10 +114,36 @@ int lit_mots_automate ( char * szIp, short int start , short int count)
 void lit_mots_nanodac (char * pIp )
 {
 int i=0;
+int rc=0;
+  time_t t;
+  char szt[20];
+
+    aiResolution[VOIE1] = lit_resolution_voie(pIp,VOIE1);
+    aiResolution[VOIE2] = lit_resolution_voie(pIp,VOIE2);
+    aiResolution[VOIE3] = lit_resolution_voie(pIp,VOIE3);
+    aiResolution[VOIE4] = lit_resolution_voie(pIp,VOIE4);
 
 memset( amots,0,sizeof(amots));
-i=lit_mots_automate (pIp,IBASE,40);
-
+rc=lit_mots_automate (pIp,IBASE,40);
+if (rc>0) {
+   for (i=0;i < rc;i++) {
+           amots[i].fval = tab_reg[i] ;
+   }   
+}
+/*
+rc=lit_mots_automate (pIp,IBASERESOLUTION,100);
+if (rc>0) {
+    aiResolution[VOIE1] = tab_reg[1];
+    aiResolution[VOIE2] = tab_reg[(1+0x80)/2];
+    fprintf(stderr,"a %s %d %d \n",pIp,tab_reg[1], tab_reg[0x81]); 
+}
+rc=lit_mots_automate (pIp,IBASERESOLUTION+ 0x100,100);
+if (rc>0) {
+    aiResolution[VOIE3] = tab_reg[1];
+    aiResolution[VOIE4] = tab_reg[(1+0x80)/2];
+    fprintf(stderr,"b %s %d %d \n",pIp,tab_reg[1], tab_reg[0x81]); 
+}
+*/
 }
 
 /*------------------------------------------------------------------
@@ -117,6 +155,7 @@ void print_TH(char * pMachine,int iT,int iHg)
 {
 float f1; 
 float f2; 
+float f;
 
 time_t t;
 char sztime[20];
@@ -127,11 +166,19 @@ char sztime[20];
  if (iT == RIEN && iHg == RIEN) {
       return;
  }
- if (iT != RIEN) {
-     f1 = amots[iT].fval / 10.0; 
+ if (iT != RIEN) { 
+     f = aiResolution[iT]*10;
+     if (f == 0.0) { 
+         f = 1.0;
+     }
+     f1 = amots[iT].fval / f; 
  }
  if (iHg != RIEN) {
-     f2 = amots[iHg].fval / 10.0; 
+     f = aiResolution[iHg]*10;
+     if (f == 0.0) { 
+         f = 1.0;
+     }
+     f2 = amots[iHg].fval / f; 
  }
  if (iT != RIEN && iHg != RIEN) {
      printf ("%s;;%s;%5.2f;%5.2f;\n",sztime,pMachine,f1,f2); 
@@ -177,6 +224,10 @@ void print_nanodacs()
  print_TH ( "M707003",  VOIE1, VOIE3);
  print_TH ( "M707010",  VOIE2, RIEN);
 
+ // Cabine peinture Cabine F
+ lit_mots_nanodac ("10.101.0.18");
+ print_TH ( "M254306",  VOIE1, VOIE2);
+// print_TH ( "M255002",  RIEN, VOIE4);
 }
 /*------------------------------------------------------------------
   * printf des mots lus

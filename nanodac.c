@@ -156,6 +156,8 @@ void print_TH(char * pMachine,int iT,int iHg)
 float f1; 
 float f2; 
 float f;
+int n;
+int i;
 
 time_t t;
 char sztime[20];
@@ -167,16 +169,18 @@ char sztime[20];
       return;
  }
  if (iT != RIEN) { 
-     f = aiResolution[iT]*10;
-     if (f == 0.0) { 
-         f = 1.0;
+     n = aiResolution[iT];
+     f = 1.0;
+     for (i=0; i < n ;i++) {
+         f = f * 10.0;
      }
      f1 = amots[iT].fval / f; 
  }
  if (iHg != RIEN) {
-     f = aiResolution[iHg]*10;
-     if (f == 0.0) { 
-         f = 1.0;
+     n = aiResolution[iHg];
+     f = 1.0;
+     for (i=0; i < n ;i++) {
+         f = f * 10.0;
      }
      f2 = amots[iHg].fval / f; 
  }

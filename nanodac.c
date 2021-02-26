@@ -130,20 +130,6 @@ if (rc>0) {
            amots[i].fval = tab_reg[i] ;
    }   
 }
-/*
-rc=lit_mots_automate (pIp,IBASERESOLUTION,100);
-if (rc>0) {
-    aiResolution[VOIE1] = tab_reg[1];
-    aiResolution[VOIE2] = tab_reg[(1+0x80)/2];
-    fprintf(stderr,"a %s %d %d \n",pIp,tab_reg[1], tab_reg[0x81]); 
-}
-rc=lit_mots_automate (pIp,IBASERESOLUTION+ 0x100,100);
-if (rc>0) {
-    aiResolution[VOIE3] = tab_reg[1];
-    aiResolution[VOIE4] = tab_reg[(1+0x80)/2];
-    fprintf(stderr,"b %s %d %d \n",pIp,tab_reg[1], tab_reg[0x81]); 
-}
-*/
 }
 
 /*------------------------------------------------------------------

@@ -137,7 +137,7 @@ genere la chaine qui sera importe dans la table meca_datalog
 2019-10-09 18:01:00;;M707003;19.60;78.80;
 date;;machine;temperature;hygrometrie;
 ------------------------------------------------------------------*/
-void print_TH(char * pMachine,int iT,int iHg) 
+void print_TH(char * pMachine,int iT ,int iHg) 
 {
 float f1; 
 float f2; 
@@ -218,7 +218,18 @@ void print_nanodacs()
  lit_mots_nanodac ("10.101.0.18");
  print_TH ( "M254306",  VOIE1, VOIE2);
 // print_TH ( "M255002",  RIEN, VOIE4);
+
+ // Etuve Grande Site9
+ lit_mots_nanodac ("10.9.12.1");
+ print_TH ( "M909014", VOIE1, RIEN);
+ print_TH ( "M909015", VOIE4, VOIE3);
+ print_TH ( "M909018", VOIE2 , RIEN);
+
+ // Etuve Petite Site9
+ lit_mots_nanodac ("10.9.12.2");
+ print_TH ( "M909016", VOIE1, RIEN); 
 }
+
 /*------------------------------------------------------------------
   * printf des mots lus
   ------------------------------------------------------------------*/

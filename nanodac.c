@@ -15,12 +15,12 @@
 #define MAX_MOTS_LUS 123
 
 
-#define RIEN -100 
+#define RIEN -100
 #define IBASE 0x100
 #define IBASERESOLUTION 0x1800
 #define VOIE1 0
 #define VOIE2 4
-#define VOIE3 8 
+#define VOIE3 8
 #define VOIE4 12
 
 uint16_t tab_reg[MAX_MOTS_LUS];
@@ -68,23 +68,23 @@ int lit_mots_automate ( char * szIp, short int start , short int count)
   if (count > MAX_MOTS_LUS) {
       count = MAX_MOTS_LUS;
   }
-   
+
   /* Read count registers from the address start */
   rc = modbus_read_registers(ctx, start, count, tab_reg);
   if (rc == -1 && errno == EMBXILADD) {
         fprintf(stderr,"FAILED %d %d %s \n",rc,errno,modbus_strerror(errno));
         return -3;
-   } 
- 
+   }
+
   if (rc == -1 ) {
         fprintf(stderr,"OK %d %d %s \n",rc,errno,modbus_strerror(errno));
         return -4;
-   } 
-	
+   }
+
 
   modbus_close(ctx);
   modbus_free(ctx);
-  
+
   return rc;
 }
 
@@ -128,7 +128,7 @@ rc=lit_mots_automate (pIp,IBASE,40);
 if (rc>0) {
    for (i=0;i < rc;i++) {
            amots[i].fval = tab_reg[i] ;
-   }   
+   }
 }
 }
 
@@ -137,10 +137,10 @@ genere la chaine qui sera importe dans la table meca_datalog
 2019-10-09 18:01:00;;M707003;19.60;78.80;
 date;;machine;temperature;hygrometrie;
 ------------------------------------------------------------------*/
-void print_TH(char * pMachine,int iT ,int iHg) 
+void print_TH(char * pMachine,int iT ,int iHg)
 {
-float f1; 
-float f2; 
+float f1;
+float f2;
 float f;
 int n;
 int i;
@@ -148,19 +148,19 @@ int i;
 time_t t;
 char sztime[20];
 
- t = time (NULL); 
+ t = time (NULL);
  strftime (sztime,20,"%Y-%m-%d %H:%M:00",localtime(&t));
 
  if (iT == RIEN && iHg == RIEN) {
       return;
  }
- if (iT != RIEN) { 
+ if (iT != RIEN) {
      n = aiResolution[iT];
      f = 1.0;
      for (i=0; i < n ;i++) {
          f = f * 10.0;
      }
-     f1 = amots[iT].fval / f; 
+     f1 = amots[iT].fval / f;
  }
  if (iHg != RIEN) {
      n = aiResolution[iHg];
@@ -168,14 +168,19 @@ char sztime[20];
      for (i=0; i < n ;i++) {
          f = f * 10.0;
      }
-     f2 = amots[iHg].fval / f; 
+     f2 = amots[iHg].fval / f;
  }
  if (iT != RIEN && iHg != RIEN) {
-     printf ("%s;;%s;%5.2f;%5.2f;\n",sztime,pMachine,f1,f2); 
+     printf ("%s;;%s;%5.2f;%5.2f;\n",sztime,pMachine,f1,f2);
  } else if (iHg == RIEN) {
-     printf ("%s;;%s;%5.2f;;\n",sztime,pMachine,f1); 
+           if (pMachine == "M909018") {
+             printf ("%s;;%s;%5.2f;\n",sztime,pMachine, (f1/150)*-1);
+         }else {
+             printf ("%s;;%s;%5.2f;\n",sztime,pMachine,f1);
+              }
+     /*printf ("%s;;%s;%5.2f;;\n",sztime,pMachine,f1);*/
  } else {
-     printf ("%s;;%s;;%5.2f;\n",sztime,pMachine,f2); 
+     printf ("%s;;%s;;%5.2f;\n",sztime,pMachine,f2);
  }
 }
 /*------------------------------------------------------------------
@@ -183,8 +188,8 @@ char sztime[20];
 ------------------------------------------------------------------*/
 void print_nanodacs()
 {
- 
- // Cabine atelier 155 
+
+ // Cabine atelier 155
  lit_mots_nanodac ("10.101.0.11");
  print_TH ( "M155002",  VOIE1, VOIE3);
  print_TH ( "M155009",  VOIE2, RIEN);
@@ -192,8 +197,8 @@ void print_nanodacs()
  // Etuve PS1
  lit_mots_nanodac ("10.101.0.12");
  print_TH ( "M154011",  VOIE1, RIEN);
- 
- // Desolvatation 254 
+
+ // Desolvatation 254
  lit_mots_nanodac ("10.101.0.13");
  print_TH ( "M254010",  VOIE1, RIEN);
 
@@ -227,7 +232,7 @@ void print_nanodacs()
 
  // Etuve Petite Site9
  lit_mots_nanodac ("10.9.12.2");
- print_TH ( "M909016", VOIE1, RIEN); 
+ print_TH ( "M909016", VOIE1, RIEN);
 }
 
 /*------------------------------------------------------------------
